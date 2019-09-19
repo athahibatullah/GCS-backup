@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="frontend/css/jquery-ui.css">
+    <link rel="stylesheet" href="frontend/css/leaflet.css">
+    <link rel="stylesheet" href="frontend/css/bootstrap.css">
+    <link rel="stylesheet" href="frontend/css/custom.css">
+
+    <script type="text/javascript" src="frontend/library/fileSaver.js"></script>
+    <script type="text/javascript" src="frontend/library/ease.js"></script>
+    <script type="text/javascript" src="frontend/library/jquery.js"></script>
+    <script type="text/javascript" src="frontend/library/socket.io.js"></script>
+    <script type="text/javascript" src="frontend/library/papaparse.min.js"></script>
+    <script type="text/javascript" src="frontend/library/jquery-ui.js"></script>
+    <script type="text/javascript" src="frontend/library/leaflet.js"></script>
+    <script type="text/javascript" src="frontend/library/chartjs.js"></script>
+
+    <title>GCS Maheswara</title>
+  </head>
+  <body>
+    <!-- Modal -->
+    <div class="modal fade" id="SettingModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Header -->
+          <div class="modal-header">
+            <h4 class="modal-title"> <font color="black"> Setting </font></h4>
+            <button class ="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <!-- Body   -->
+          <div class="modal-body">
+            <h5><font color="black">Port Muatan</font></h5>
+            <input type="text" id="port_muatan" placeholder="COM 3">
+
+            <h5><font color="black"> Baudrate Muatan</font></h5>
+            <input list="BRate" id="baudrate_muatan" placeholder="-">
+
+            <br>
+            <h5><font color="black">Port ATS</font></h5>
+            <input type="text" id="port_ats" placeholder="COM 3">
+
+            <h5><font color="black"> Baudrate ATS</font></h5>
+            <input list="BRate" id="baudrate_ats" placeholder="-">
+            
+            <h5><font color="black"> Latitude ATS</font></h5>
+            <input list="number" step="any" id="latitude_ats" placeholder="-">
+            
+            <h5><font color="black"> Longitude ATS</font></h5>
+            <input list="number" step="any" id="longitude_ats" placeholder="-">
+
+            <datalist id="BRate">
+              <option value="300">
+              <option value="600">
+              <option value="1200">
+              <option value="2400">
+              <option value="4800">
+              <option value="9600">
+              <option value="14400">
+              <option value="19200">
+              <option value="28800">
+              <option value="38400">
+              <option value="57600">
+              <option value="115200">
+            </datalist>
+
+          </div>
+
+          <!-- Footer -->
+          <div class="modal-footer">
+            <button class="btn btn-success" data-dismiss="modal" id="settingan">Apply</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!--       -->
+
+    <!-- Logo -->
+    <div class="container">
+      <div class="row justify-content-start">
+        <div class="d-inline-block column text-center">
+          <img src="frontend/logo/lapan.png" class="img-fluid Lapan">
+          <img src="frontend/logo/UGM.png" class="img-fluid UGM">
+          <img src="frontend/logo/GMAT.png" class="img-fluid GMAT">
+          <img src="frontend/logo/Komurindo2019.png" class="img-fluid Komurindo">
+        </div>
+      </div>
+    </div>
+    <!--------->
+
+    <!-- Setting -->
+    <div class="img-container btn-group GroupSetting">
+      <input type="image" src="frontend/misc/Setting.png" id="Gear" class="spin" data-toggle="modal" data-target="#SettingModal">
+      <input type="image" src="frontend/misc/SettingBack.png" id="GearBack">
+    </div>
+
+    <div id="ArrowSetting">
+      <img src="frontend/misc/arrow.png">
+    </div>
+
+    <!-- Content -->
+    <div style="position:relative;display:inline;">
+    <button id="KotakSatu" onclick="ChangeButtonOne()" disabled><img src="frontend/misc/GMap.png" id="GMap"> <h3 style="display:inline;"><font color="white">Map<font></h3> </button>
+    </div>
+    <div style="position:relative;display:inline;">
+      <button id="KotakDua" onclick="ChangeButtonTwo()"><img src="frontend/misc/GGrafik.png" id="GGrafik"> <h3 style="display:inline;"><font color="white">Graph<font></h3> </button>
+    </div>
+    <div style="position:relative;display:inline;">
+	     <button id="KotakTiga" onclick="ChangeButtonThree()"><img src="frontend/misc/Hamburger.png" id=Hamburger> <h3 style="display:inline;"><font color="white">Detail<font></h3> </button>
+  </div>
+
+    <br>
+    <br><br><br>
+    <br><br>
+    <div id="Map" >      
+      <button id="autohand" class="btn btn-success" onclick="map_auto()">Auto</button>
+      <div id="map">
+      <div id="basemapslidercontainer">
+        <div id="basemapslider">
+        </div>
+      </div>
+      </div>
+      <table style="width: 100%;">
+        <tr>
+          <td id="map_tinggi" style="font-size:25px;">Ketinggian:<br> -</td>
+          <td id="map_latitude" style="font-size:25px;">Latitude:<br> -</td>
+          <td id="map_longitude" style="font-size:25px;">Longitude:<br> -</td>
+        </tr>
+      </table>
+    </div>
+
+    <div id="Graph" hidden>
+      <img id="DownloadGraph" src="frontend/misc/GDownload.png">
+      <h3 style="cursor: pointer;display:inline;" onclick="download_graph()"> Graph </h3> <!-- TO DO -->
+      <div class="row">
+          <div class="center">
+            <div id="canvas-holder" style="width:50%;float: left;" \
+            class="col-xs-6">
+            <canvas id="tempChart" width="500" height="500"></canvas>
+            </div>
+            <div id="canvas-holder" style="width:50%;float: left;" \
+            class="col-xs-6">
+            <canvas id="humidChart" width="500" height="500"></canvas>
+            </div>
+
+            
+            <div id="canvas-holder" style="width:50%;float: left;" \
+            class="col-xs-6">
+            <canvas id="pressureChart" width="500" height="500"></canvas> 
+            </div>
+            <div id="canvas-holder" style="width:50%;float: left;" \
+            class="col-xs-6">
+            <canvas id="windDirChart" width="500" height="500"></canvas>           
+            </div>
+
+            <div id="canvas-holder" style="width:50%;float: left;" \
+            class="col-xs-6">
+            <canvas id="windSpeedChart" width="500" height="500"></canvas>
+            </div>
+            <div id="canvas-holder" style="width:50%;float: left;" \
+            class="col-xs-6">
+            </div>
+          </div>
+      </div>
+    </div>
+	<div id="Detail" hidden>
+		<div id="DetailText">
+      <img src="frontend/misc/Exclamation.png" id="Exclamation">
+			<h2 style="display:inline;">Informasi Peluncuran</h2>
+      <!-- Connect -->
+      <button id="Connect" class="btn tombolconnect">Connect</button>
+      <!------------>
+			<hr>
+      <img src="frontend/misc/Clock.png" id="Clock">
+			<h3 style="display:inline;">Waktu Peluncuran</h3>
+			<ul>
+			<h5 id="init_tanggal">Tanggal Peluncuran: -</h5> 
+			<h5 id="init_time">Waktu Peluncuran: -</h5>
+			</ul>
+      <img src="frontend/misc/GLocation.png" id="GLocation">
+			<h3 style="display:inline;">Lokasi Peluncuran</h3>
+			<ul>
+			<h5 id="init_latitude">Latitude: -</h5> 
+			<h5 id="init_longitude">Longitude: -</h5>
+			</ul>
+			<hr>
+		</div>
+
+    <a onclick=download_csv()>
+    <img src="frontend/misc/GDownload.png" id="Download">
+    <h3 id="DownloadCSV"> CSV </h3>
+    </a>
+    <hr>
+    
+    <img src="frontend/misc/Monitor.png" id="Monitor">
+    <h2 style="display:inline;">Terminal</h2>
+    <br>
+    <textarea class="scrollabletextbox" id="terminal" readonly>
+    </textarea>
+    </div>
+
+    <script src="frontend/myjavascript/maps.js">
+    </script>
+    <script src="frontend/myjavascript/chart_temp.js"></script>
+    <script src="frontend/myjavascript/chart_humid.js"></script>
+    <script src="frontend/myjavascript/chart_pressure.js"></script>
+    <script src="frontend/myjavascript/chart_wind_dir.js"></script>
+    <script src="frontend/myjavascript/chart_wind_speed.js"></script>
+    <script src="frontend/myjavascript/text.js"></script>
+    <script src="frontend/myjavascript/initData.js"></script>
+    <script src="frontend/myjavascript/socket.js"></script>
+    <script src="frontend/library/bootstrap.min.js"></script>
+    <script src="frontend/myjavascript/script.js"></script>
+
+    <script>
+    </script>
+
+  </body>
+</html>
